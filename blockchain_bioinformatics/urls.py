@@ -18,5 +18,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('DockerMarket/', include('dockermarket.urls', namespace='dockermarket')),
+    path('DockerMarket/', include('DockerMarket.urls', namespace='DockerMarket')),
 ]
