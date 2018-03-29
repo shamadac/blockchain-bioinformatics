@@ -1,0 +1,4 @@
+<h1>Welcome to DockerMarket!</h1>
+{% for docker in docker_list %}
+    <p><a href="{% url 'DockerMarket:docker_view' slug=docker.slug %}">{{ docker.title }}</a></p>
+{% endfor %}
