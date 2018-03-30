@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.text import slugify
+from django.forms import ModelForm
 
 # Each subclass of models.Model is associated with a table in the server DB.
        
@@ -29,3 +30,22 @@ class User(models.Model):
     def __str__(self):
         fullName = str(self.firstName, self.lastName)
         return fullName
+
+# Each subclass of ModelForm is a form that is associated with a given model.
+
+class RegistrationForm(ModelForm):
+    class Meta:
+        model = User
+        fields = [
+                    'firstName',
+                    'lastName',
+                    'email',
+                  ]
+
+class DockerSubmissionForm(ModelForm):
+    class Meta:
+        model = Docker
+        fields = [
+                    'title',
+                    'description',
+                  ]

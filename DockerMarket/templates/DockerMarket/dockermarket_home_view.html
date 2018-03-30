@@ -1,4 +1,11 @@
 <h1>Welcome to DockerMarket!</h1>
+
+<p><a href="{% url 'DockerMarket:new_user_view' %}">Register</a></p>
+
+<h2>Dockers</h2>
+
+<p><a href="{% url 'DockerMarket:new_docker_view' %}">Submit Docker</a></p>
+
 {% for docker in docker_list %}
     <p><a href="{% url 'DockerMarket:docker_view' slug=docker.slug %}">{{ docker.title }}</a></p>
 {% endfor %}
