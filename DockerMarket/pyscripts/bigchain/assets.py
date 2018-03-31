@@ -52,6 +52,3 @@ def register(ID, unique_id, public_key, private_key, asset_type=""):
     
     # Retrieve validated transaction
     tx_retrieved = database.transactions.retrieve(prepared_tx['id'])
-
-#from pyscripts.bigchain import database
-#database.assets.get(search="235eea70ef285a930999066d7785f9c381a62a6e4b1fde6c868e3e8dfa154d4f")
