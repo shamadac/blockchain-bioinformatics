@@ -4,7 +4,8 @@ from DockerMarket.models import User, Docker
 # Register your models here.
 
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('firstName', 'lastName', 'email')
+    exclude = ('unique_id',)
+    list_display = ('firstName', 'lastName', 'email', 'unique_id')
     search_fields = ['firstName', 'lastName']
 
 class DockerAdmin(admin.ModelAdmin):
@@ -13,5 +14,5 @@ class DockerAdmin(admin.ModelAdmin):
     list_filter = ['created']
     search_fields = ['title', 'description']
 
-admin.site.register(User)
+admin.site.register(User, UserAdmin)
 admin.site.register(Docker, DockerAdmin)
