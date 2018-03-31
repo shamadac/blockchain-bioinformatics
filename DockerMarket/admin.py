@@ -1,5 +1,5 @@
 from django.contrib import admin
-from DockerMarket.models import User, Docker
+from DockerMarket.models import User, Docker, Key
 
 # Register your models here.
 
@@ -14,5 +14,6 @@ class DockerAdmin(admin.ModelAdmin):
     list_filter = ['created']
     search_fields = ['title', 'description']
 
+admin.site.register(Key)
 admin.site.register(User, UserAdmin)
 admin.site.register(Docker, DockerAdmin)

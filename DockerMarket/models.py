@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.text import slugify
 from django.forms import ModelForm
+from django.shortcuts import get_object_or_404
 
 from bigchaindb_driver.crypto import generate_keypair
 from hashlib import sha256
@@ -17,10 +18,11 @@ class Docker(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     slug = models.SlugField(max_length=110, unique=True)
+    unique_id = models.CharField(max_length=100)
     
-    Developer = models.ForeignKey('DockerMarket.User', models.SET_NULL, blank=True, null=True)
+    developer = models.ForeignKey('DockerMarket.User', on_delete='CASCADE')
     file = models.FileField(upload_to="DockerMarket/dockers")
-    password = models.CharField(max_length=50)
+    password = models.CharField(max_length=50, blank=True)
     
     def save(self, *args, **kwargs):
         
@@ -34,9 +36,9 @@ class Docker(models.Model):
         hash = sha256(b)
         hex_dig = hash.hexdigest()     
         self.unique_id = hex_dig
-        asset_type = "New docker"
-        
+                
         # Register docker as a digital asset on the blockchain
+        asset_type = "New docker"
         assets.register(hex_dig, hex_dig, pub, priv, asset_type)
         
         # Generate slug for url mapping
@@ -46,6 +48,18 @@ class Docker(models.Model):
         key = encryption.getKey(self.password)
         self.file = encryption.cipher("encrypt", key, self.file)
         
+        # First save
+        super(Docker, self).save(*args, **kwargs)
+        
+        # Save docker access details to Developer's keys & clear password field
+        self.developer.keys.create(
+            unique_id=hex_dig,
+            key=key,
+            )
+        
+        self.password = ""
+        
+        # Second save
         super(Docker, self).save(*args, **kwargs)
     
     def __str__(self):
@@ -58,6 +72,8 @@ class User(models.Model):
     lastName = models.CharField(max_length=30)
     email = models.CharField(max_length=75)
     unique_id = models.CharField(max_length=100)
+    
+    keys = models.ManyToManyField('DockerMarket.Key', blank=True)
     
     def __str__(self):
         fullName = str(self.firstName + "" + self.lastName)
@@ -85,6 +101,10 @@ class User(models.Model):
 
 # Each subclass of ModelForm is a form that is associated with a given model.
 
+class Key(models.Model):
+    unique_id = models.CharField(max_length=100, primary_key=True)
+    key = models.BinaryField()
+
 class RegistrationForm(ModelForm):
     class Meta:
         model = User
@@ -100,4 +120,7 @@ class DockerSubmissionForm(ModelForm):
         fields = [
                     'title',
                     'description',
+                    'developer',
+                    'file',
+                    'password',
                   ]
