@@ -31,6 +31,9 @@ def encrypt(key, file: 'File'):
                 chunk += b' ' * (16 - (len(chunk) % 16))
             
             outfile.write(encryptor.encrypt(chunk))
+    
+    encrypted_file = File(outputFile)
+    return encrypted_file
 
 
 def decrypt(key, filename, reviewer: 'Reviewer'):
@@ -38,7 +41,7 @@ def decrypt(key, filename, reviewer: 'Reviewer'):
     filename_split = filename.rsplit(".")
     name, extension = filename_split[0], filename_split[1]
     outputFile = name + " (Reviewed_" + reviewer.initials + ")." + extension
-    filename = "ms/" + name + ".thesis"
+    filename = "ms/" + name + ".docker"
     
     with open(filename, 'rb') as infile:
         filesize = int(infile.read(16))
@@ -66,4 +69,4 @@ def cipher(operation, key, file, reviewer: 'Reviewer' = ""):
         print("Docker encrypted.")
     elif operation == 'decrypt':
         decrypt(key, file, reviewer)
-        print("Manuscript body decrypted.")
+        print("Docker decrypted.")

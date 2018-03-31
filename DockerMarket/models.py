@@ -44,9 +44,7 @@ class Docker(models.Model):
         
         # Encrypt & save file
         key = encryption.getKey(self.password)
-#        filename = self.file.name
-#        filesize = self.file.size
-        encryption.cipher("encrypt", key, self.file)
+        self.file = encryption.cipher("encrypt", key, self.file)
         
         super(Docker, self).save(*args, **kwargs)
     
