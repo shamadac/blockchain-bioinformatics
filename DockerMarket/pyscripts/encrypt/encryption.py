@@ -63,6 +63,7 @@ def getKey(password):
     hasher = SHA256.new(bytes(password, encoding='utf-8'))
     return hasher.digest()
 
+
 def cipher(operation, key, file, reviewer: 'Reviewer' = ""):
     if operation == 'encrypt':
         encrypt(key, file)

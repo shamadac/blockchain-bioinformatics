@@ -66,7 +66,7 @@ def new_user_view(request):
 def new_docker_view(request):
     template = 'DockerMarket/new_docker_view.html'
     if request.method == "POST":
-        form = DockerSubmissionForm(request.POST)
+        form = DockerSubmissionForm(request.POST, request.FILES)
         
         if form.is_valid():
             new_docker = form.save(commit=False)
