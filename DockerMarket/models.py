@@ -5,6 +5,7 @@ from django.forms import ModelForm
 from bigchaindb_driver.crypto import generate_keypair
 from hashlib import sha256
 from .pyscripts.bigchain import assets
+from .pyscripts.encrypt import encryption
 
 # Each subclass of models.Model is associated with a table in the server DB.
        
@@ -17,8 +18,34 @@ class Docker(models.Model):
     updated = models.DateTimeField(auto_now=True)
     slug = models.SlugField(max_length=110, unique=True)
     
+    Developer = models.ForeignKey('DockerMarket.User', models.SET_NULL, blank=True, null=True)
+    file = models.FileField(upload_to="DockerMarket/dockers")
+    password = models.CharField(max_length=50)
+    
     def save(self, *args, **kwargs):
+        
+        # Make public & private keypair
+        user_keys = generate_keypair()
+        priv = user_keys.private_key
+        pub = user_keys.public_key
+        
+        # Set user's unique ID to be hash of public & private keys
+        b = bytes(priv + pub, "utf8")
+        hash = sha256(b)
+        hex_dig = hash.hexdigest()     
+        self.unique_id = hex_dig
+        asset_type = "New docker"
+        
+        # Register docker as a digital asset on the blockchain
+        assets.register(hex_dig, hex_dig, pub, priv, asset_type)
+        
+        # Generate slug for url mapping
         self.slug = slugify(self.title)
+        
+        # Encrypt & save file
+        key = encryption.getKey(self.password)
+        self.file = encryption.cipher("encrypt", key, self.file)
+        
         super(Docker, self).save(*args, **kwargs)
     
     def __str__(self):
@@ -49,7 +76,10 @@ class User(models.Model):
         hex_dig = hash.hexdigest()     
         self.unique_id = hex_dig
         asset_type = "New user"
+        
+        # Register docker as a digital asset on the blockchain
         assets.register(hex_dig, hex_dig, pub, priv, asset_type)
+        
         super(User, self).save(*args, **kwargs)
 
 
